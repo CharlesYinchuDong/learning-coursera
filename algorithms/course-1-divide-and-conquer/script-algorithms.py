@@ -6,8 +6,17 @@
 
 
 
-#def countInversion(nums):
+def countInversion(nums):
     ### Function that use merge sort to calculate inversion
+    if len(nums) == 1:
+        return nums, 0
+    else:
+        breakIdx = round(len(nums) / 2)
+        part1, res1 = countInversion(nums[0:breakIdx])
+        part2, res2 = countInversion(nums[breakIdx:])
+        resMerge, resInversion = mergeCnt(part1, part2)
+        invTotal = res1 + res2 + resInversion
+        return resMerge, invTotal 
 
 def mergeCnt(listA, listB):
     ### Function that merge two arrays. Return sorted version and count inversion.
@@ -17,17 +26,20 @@ def mergeCnt(listA, listB):
 
     ### Loop through two lists
     i , j, k = 0, 0, 0 
-    while i < len(listA):
-        while j < len(listB):
-            if listA[i] < listB[j]:
-                resList.append(listA[i])
-                i = i + 1
-                print('i = '+str(i))
-            else:
-                resList.append(listB[j])
-                j = j + 1
-                print('j = '+str(j))
-    if i == len(listA):
+    lenA = len(listA)
+    lenB = len(listB)
+    while i < lenA and j < lenB:
+        if listA[i] < listB[j]:
+            resList.append(listA[i])
+            i = i + 1
+            # print('i = '+str(i))
+        else:
+            resList.append(listB[j])
+            j = j + 1
+            ### When move things from second list, count inversions.
+            resCnt = resCnt + lenA - i
+            # print('j = '+str(j))
+    if i == lenA:
         resList = resList + listB[j:]
     else:
         resList = resList + listA[i:]
@@ -46,10 +58,13 @@ def week2Task():
 #    print(dataV1)
     
     ### Call function to count inversions
-    countInversion(dataV1)
+    sortedList, numInversion = countInversion(dataV1)
+    print('Sorted list: ', sortedList)
+    print('Number of inversions: ', numInversion)
 
 
 
 if __name__ == '__main__':
-    #week2Task()
-    mergeCnt([1,3, 6], [2,4,5])
+    week2Task()
+    #print(mergeCnt([1,3, 6], [2,4,5]))
+    #print(countInversion([1,3,6,2,4,5]))
