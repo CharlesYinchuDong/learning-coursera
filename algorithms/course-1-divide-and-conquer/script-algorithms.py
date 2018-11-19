@@ -62,9 +62,23 @@ def week2Task():
     print('Sorted list: ', sortedList)
     print('Number of inversions: ', numInversion)
 
+def week3Task():
+    ### Initialization
+    fileLocation = 'week-1/IntegerArray.txt'
+
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [int(x) for x in dataRaw]
+
+#    print(dataV1)
+ 
+
 
 
 if __name__ == '__main__':
-    week2Task()
+    #week2Task()
     #print(mergeCnt([1,3, 6], [2,4,5]))
     #print(countInversion([1,3,6,2,4,5]))
+
+    week3Task()
