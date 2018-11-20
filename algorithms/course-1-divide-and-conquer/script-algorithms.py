@@ -2,7 +2,8 @@
 ### Charles Yinchu Dong
 ### 11/15/2018
 
-
+### Import packages
+import numpy as np
 
 
 
@@ -72,18 +73,55 @@ def week3Task():
     dataV1 = [int(x) for x in dataRaw]
 
 #    print(dataV1)
+    
+    resList, resCnt = quickSort(dataV1, 'median')
+    print('Number of comparisons: ', resCnt)
 
 def partitionSubroutine(A, l, r, pivot):
     ### Function for partition subroutine.
     ### Initialization
+    ### Swap pivot point to the most left
     if pivot == 'left':
-        p = A[l]
+        pivotIdx = l
     elif pivot == 'right':
-        p = A[r]
-        A[l], A[r] = A[r], A[l]
+        pivotIdx = r
+    elif pivot == 'median':
+        p1 = A[l]
+        p2 = A[int(r/2)]
+        p3 = A[r]
+        pMedian = sorted([p1, p2, p3])[1]
+        pivotIdx = A.index(pMedian)
     else:
         raise Exception('Invalid selection of pivot point')
+    A[l], A[pivotIdx] = A[pivotIdx], A[l]
 
+    ### Loop through list A
+    p = A[l]
+    i = l + 1
+    for j in np.arange(l + 1, r + 1):
+        if A[j] < p:
+            A[i], A[j] = A[j], A[i]
+            i = i + 1
+    A[l], A[i - 1] = A[i - 1], A[l]
+
+    return A[:i-1], [A[i-1]], A[i:], r
+
+def quickSort(A, pivot):
+    ### Function to do the quickSort
+    ### Initialization
+    if len(A) == 1 or len(A) == 0:
+        return A, 0
+    else:
+        part1, partMiddle, part2, cntPartition = partitionSubroutine(A, 0, len(A)-1, pivot)
+#        print(part1, partMiddle, part2, cntPartition)
+        part1Sort, cntPart1 = quickSort(part1, pivot)
+#        print(part1Sort, cntPart1)
+        part2Sort, cntPart2 = quickSort(part2, pivot)
+#        print(part2Sort, cntPart2)
+
+        listAll = part1Sort + partMiddle + part2Sort
+        cntAll = cntPartition + cntPart1 + cntPart2
+        return listAll, cntAll 
 
 
 if __name__ == '__main__':
@@ -91,8 +129,11 @@ if __name__ == '__main__':
     #print(mergeCnt([1,3, 6], [2,4,5]))
     #print(countInversion([1,3,6,2,4,5]))
 
-#    week3Task()
-    partitionSubroutine([2,4,1,5,3,6,7,8,9], 0, 8, 'random')
+    week3Task()
+#    print(partitionSubroutine([2,4,1,5,3,6,7,8,9], 0, 8, 'left'))
+#    print(quickSort([2,4,1,5,3,6,7,8,9], 'left'))
+#    print(quickSort([], 'left'))
+
 
 
 
