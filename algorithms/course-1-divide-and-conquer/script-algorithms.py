@@ -64,7 +64,7 @@ def week2Task():
 
 def week3Task():
     ### Initialization
-    fileLocation = 'week-1/IntegerArray.txt'
+    fileLocation = 'week-2/quickSort.txt'
 
     ### Load data
     with open(fileLocation, 'r') as f:
@@ -72,7 +72,17 @@ def week3Task():
     dataV1 = [int(x) for x in dataRaw]
 
 #    print(dataV1)
- 
+
+def partitionSubroutine(A, l, r, pivot):
+    ### Function for partition subroutine.
+    ### Initialization
+    if pivot == 'left':
+        p = A[l]
+    elif pivot == 'right':
+        p = A[r]
+        A[l], A[r] = A[r], A[l]
+    else:
+        raise Exception('Invalid selection of pivot point')
 
 
 
@@ -81,4 +91,42 @@ if __name__ == '__main__':
     #print(mergeCnt([1,3, 6], [2,4,5]))
     #print(countInversion([1,3,6,2,4,5]))
 
-    week3Task()
+#    week3Task()
+    partitionSubroutine([2,4,1,5,3,6,7,8,9], 0, 8, 'random')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
