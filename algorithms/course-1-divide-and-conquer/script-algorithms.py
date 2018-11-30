@@ -49,7 +49,7 @@ def mergeCnt(listA, listB):
 
 def week2Task():
     ### Initialization
-    fileLocation = 'week-1/IntegerArray.txt'
+    fileLocation = 'week-2/IntegerArray.txt'
 
     ### Load data
     with open(fileLocation, 'r') as f:
@@ -65,7 +65,7 @@ def week2Task():
 
 def week3Task():
     ### Initialization
-    fileLocation = 'week-2/quickSort.txt'
+    fileLocation = 'week-3/quickSort.txt'
 
     ### Load data
     with open(fileLocation, 'r') as f:
@@ -123,17 +123,30 @@ def quickSort(A, pivot):
         cntAll = cntPartition + cntPart1 + cntPart2
         return listAll, cntAll 
 
+def week4Task():
+    ### Initialization
+    fileLocation = 'week-4/countMinCut.txt'
+    
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [int(x) for x in dataRaw]
+
+    print(dataV1)
+    
+
 
 if __name__ == '__main__':
     #week2Task()
     #print(mergeCnt([1,3, 6], [2,4,5]))
     #print(countInversion([1,3,6,2,4,5]))
 
-    week3Task()
+#    week3Task()
 #    print(partitionSubroutine([2,4,1,5,3,6,7,8,9], 0, 8, 'left'))
 #    print(quickSort([2,4,1,5,3,6,7,8,9], 'left'))
 #    print(quickSort([], 'left'))
 
+    week4Task()
 
 
 
