@@ -4,8 +4,8 @@
 
 ### Import packages
 import numpy as np
-
-
+import re
+import random
 
 def countInversion(nums):
     ### Function that use merge sort to calculate inversion
@@ -123,6 +123,47 @@ def quickSort(A, pivot):
         cntAll = cntPartition + cntPart1 + cntPart2
         return listAll, cntAll 
 
+def randomContract(adList):
+    ### Function that uses randomiezed contraction algorithm
+    ### Initializtion
+
+    ### Pick a random edge
+    numNodes = len(adList)
+    node1Idx = random.randint(0, numNodes - 1)
+    node1List = adList[node1Idx]
+    numEdges = len(node1List) - 1
+    edgeIdx = random.randint(1, numEdges)
+
+    node1 = node1List[0]
+    node2 = node1List[edgeIdx]
+
+    node2List = [x for x in adList if x[0] == node2][0]
+
+    ### Combine two nodes
+    nodeCombineListRaw = node2List + node1List[1:]
+
+    ### Eliminate self-loop
+    nodeCombineListV1 = [x if x != node1 else node2 for x in nodeCombineListRaw]
+    nodeCombineListV2 = [nodeCombineListV1[0]] + [x for x in nodeCombineListV1[1:] if x != node2] 
+
+    ### Replace node1 in the remaining list
+    remainListV1 = [x for x in adList if x != node1List and x != node2List]
+    remainListV2 = [[x if x != node1 else node2 for x in y] for y in remainListV1]
+    
+    ### Check results
+#    print(node1, node2)
+#    print(nodeCombineListRaw)
+#    print(nodeCombineListV1)
+#    print(nodeCombineListV2)
+#    print(remainListV1)
+#    print(remainListV2)
+
+    ### Return result
+    res = remainListV2 + [nodeCombineListV2]
+#    print(res)
+    return res
+
+
 def week4Task():
     ### Initialization
     fileLocation = 'week-4/countMinCut.txt'
@@ -130,11 +171,20 @@ def week4Task():
     ### Load data
     with open(fileLocation, 'r') as f:
         dataRaw = f.read().splitlines()
-    dataV1 = [int(x) for x in dataRaw]
+    dataV1 = [re.split(r'\t+', x.rstrip('\t')) for x in dataRaw]
+    dataV2 = [[int(x) for x in y] for y in dataV1] 
 
-    print(dataV1)
+    #print(dataV2)
     
+    ### Apply randomized contraction
+    while len(dataV2) > 2:
+        dataV2 = randomContract(dataV2)
 
+    ### Count min cut
+    minCut = len(dataV2[0]) - 1
+
+    ### Return value
+    print('Min cut: ', minCut)
 
 if __name__ == '__main__':
     #week2Task()
@@ -147,6 +197,7 @@ if __name__ == '__main__':
 #    print(quickSort([], 'left'))
 
     week4Task()
+#    randomContract([[1,2,3], [2,1,3], [3,1,2,4], [4,3]])
 
 
 
