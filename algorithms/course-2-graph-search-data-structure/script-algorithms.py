@@ -9,6 +9,7 @@ import random
 import copy
 from collections import Counter
 import sys, threading
+import heapq
 
 ### Chagne recursion depth
 sys.setrecursionlimit(800000)
@@ -149,10 +150,113 @@ def test2():
     a = 2
     print(a)
 
+
+def week2Task():
+    """
+    Code up dijkstras shorted path algorithm
+    """
+    ### Initialization
+    fileLocation = 'week-2/shorted-path.txt'
+
+    s = 1
+    t = [7,37,59,82,99,115,133,165,188,197]
+    t = [197]
+
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [re.split(r'\t+', x.rstrip('\t')) for x in dataRaw]
+    dataV2 = {int(x[0]): x[1:] for x in dataV1}
+    dataV3 = dict()
+    for key in dataV2.keys():
+        valueV1 = [x.split(',') for x in dataV2[key]]
+        valueV2 = {int(x[0]): int(x[1]) for x in valueV1}
+        dataV3[key] = valueV2
+
+#    print(dataRaw)
+#    print(dataV1)
+#    print(dataV2)
+#    print(dataV3)
+
+    ### Pass to dijkstras function
+    res = dijkstras(dataV3, s=1, t=t)
+
+    print(res)
+
+def dijkstras(data, s, t):
+    """
+    Perform dijkstra's shorted path algorithm
+    """
+    ### Initialization
+    res = []
+
+    nodesAll = set(data.keys())
+    for i in data.items():
+        nodesAll.update(list(i[1].keys()))
+
+    ### Update data with nodes that no outcome
+    for node in nodesAll:
+        if node not in data:
+            data[node] = dict()
+
+    ### For each t, while loop until it finish
+    for tSpe in t:
+        ### Initialization
+        X = set([s])
+        A = {s: 0}
+        B = [s]
+
+        ### Calculate all - X
+        Y = nodesAll.difference(X)
+
+        ### Constractu heap
+        YInfo = data[s]
+        for v in Y:
+            if v not in YInfo:
+                YInfo[v] = 1000000
+        heap = [x[1] for x in YInfo.items()]
+        heapq.heapify(heap)
+
+#        print(YInfo)
+        print(heap)
+
+        while tSpe not in X:
+            ### Pop and add to X
+            wValue = heapq.heappop(heap)
+
+#            print('wValue: ', wValue)
+#            print(heap)
+
+            w = [x[0] for x in YInfo.items() if x[1] == wValue][0]
+
+#            print('w', w)
+
+            X.add(w)
+            A[w] = wValue
+            YInfo.pop(w)
+            ### Take out w-related edges and put it back
+            for v in data[w]:
+                if v not in X:
+                    heap.pop(heap.index(YInfo[v]))
+                    vValue1 = YInfo[v]
+                    vValue2 = A[w] + data[w][v]
+                    vValue = min(vValue1, vValue2)
+                    YInfo[v] = vValue
+                    heapq.heappush(heap, vValue)
+                    heapq.heapify(heap)
+
+        res.append(A[tSpe])
+
+                            
+        ### Check
+#        print(YInfo)
+#        print(YValue)
+        
+    return res
+
 if __name__ == '__main__':
-#    week1Task()
-    thread = threading.Thread(target=week1Task)
-    thread.start()
+#    thread = threading.Thread(target=week1Task)
+#    thread.start()
 #    testCase = [[1,5],[2,3],[3,4],[4,2],[4,5],[5,6],[6,9],[6,1],[7,8],[8,9],[9,7]]
 #    testCase = [[1,4],[2,8],[3,6],[4,7],[5,2],[6,9],[7,1],[8,6],[8,5],[9,7],[9,3],[10,1]]
 #    kosarajusTwoPass(testCase)
@@ -160,7 +264,7 @@ if __name__ == '__main__':
 #    testCase = [[1,7],[2,5],[3,9],[4,1],[5,8],[6,3],[6,8],[7,9],[7,4],[8,2],[9,6]]
 #    dfsLoop(testCase, list(reversed(np.arange(1, 10))))
 
-
+    week2Task()
 
 
 
