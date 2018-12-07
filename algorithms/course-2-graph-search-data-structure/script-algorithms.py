@@ -157,10 +157,12 @@ def week2Task():
     """
     ### Initialization
     fileLocation = 'week-2/shorted-path.txt'
+#    fileLocation = 'week-2/testCase2.txt'
 
     s = 1
     t = [7,37,59,82,99,115,133,165,188,197]
-    t = [197]
+
+    res = []
 
     ### Load data
     with open(fileLocation, 'r') as f:
@@ -179,7 +181,9 @@ def week2Task():
 #    print(dataV3)
 
     ### Pass to dijkstras function
-    res = dijkstras(dataV3, s=1, t=t)
+    for tSub in t:
+        resSub = dijkstras(copy.deepcopy(dataV3), s=1, t=tSub)
+        res.append(resSub) 
 
     print(res)
 
@@ -187,9 +191,9 @@ def dijkstras(data, s, t):
     """
     Perform dijkstra's shorted path algorithm
     """
-    ### Initialization
-    res = []
+#    print(data,s,t)
 
+    ### Initialization
     nodesAll = set(data.keys())
     for i in data.items():
         nodesAll.update(list(i[1].keys()))
@@ -199,60 +203,43 @@ def dijkstras(data, s, t):
         if node not in data:
             data[node] = dict()
 
-    ### For each t, while loop until it finish
-    for tSpe in t:
-        ### Initialization
-        X = set([s])
-        A = {s: 0}
-        B = [s]
+    ### Initialization
+    X = set([s])
+    A = {s: 0}
+    B = [s]
 
-        ### Calculate all - X
-        Y = nodesAll.difference(X)
+    ### Calculate all - X
+    Y = nodesAll.difference(X)
 
-        ### Constractu heap
-        YInfo = data[s]
-        for v in Y:
-            if v not in YInfo:
-                YInfo[v] = 1000000
-        heap = [x[1] for x in YInfo.items()]
-        heapq.heapify(heap)
+    ### Constractu heap
+    YInfo = data[s]
+    for v in Y:
+        if v not in YInfo:
+            YInfo[v] = 1000000
+    heap = [x[1] for x in YInfo.items()]
+    heapq.heapify(heap)
 
-#        print(YInfo)
-        print(heap)
+    while t not in X:
+        ### Pop and add to X
+        wValue = heapq.heappop(heap)
 
-        while tSpe not in X:
-            ### Pop and add to X
-            wValue = heapq.heappop(heap)
+        w = [x[0] for x in YInfo.items() if x[1] == wValue][0]
 
-#            print('wValue: ', wValue)
-#            print(heap)
+        X.add(w)
+        A[w] = wValue
+        YInfo.pop(w)
+        ### Take out w-related edges and put it back
+        for v in data[w]:
+            if v not in X:
+                heap.pop(heap.index(YInfo[v]))
+                vValue1 = YInfo[v]
+                vValue2 = A[w] + data[w][v]
+                vValue = min(vValue1, vValue2)
+                YInfo[v] = vValue
+                heapq.heappush(heap, vValue)
+                heapq.heapify(heap)
 
-            w = [x[0] for x in YInfo.items() if x[1] == wValue][0]
-
-#            print('w', w)
-
-            X.add(w)
-            A[w] = wValue
-            YInfo.pop(w)
-            ### Take out w-related edges and put it back
-            for v in data[w]:
-                if v not in X:
-                    heap.pop(heap.index(YInfo[v]))
-                    vValue1 = YInfo[v]
-                    vValue2 = A[w] + data[w][v]
-                    vValue = min(vValue1, vValue2)
-                    YInfo[v] = vValue
-                    heapq.heappush(heap, vValue)
-                    heapq.heapify(heap)
-
-        res.append(A[tSpe])
-
-                            
-        ### Check
-#        print(YInfo)
-#        print(YValue)
-        
-    return res
+    return A[t]
 
 if __name__ == '__main__':
 #    thread = threading.Thread(target=week1Task)
