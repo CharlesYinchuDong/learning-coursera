@@ -241,6 +241,156 @@ def dijkstras(data, s, t):
 
     return A[t]
 
+def week3Task():
+    """
+    Code up median maintanence
+    """
+    ### Initialization
+    fileLocation = 'week-3/median.txt'
+
+    res = []
+
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [int(x) for x in dataRaw]
+
+#    dataV1 = [1,3,4,2,5,11,6,8,12]
+ 
+#    print(dataRaw)
+#    print(dataV1)
+
+    ### Initialize two heap
+    heapH = []
+    heapL = []
+    heapq.heapify(heapH)
+    heapq.heapify(heapL)
+
+    ### Loop through all elements
+    for i in range(len(dataV1)):
+        v = dataV1[i]
+        ### If it is first one, add to low heap
+        if i == 0:
+            heapq.heappush(heapL, -1 * v)
+            m = v
+        else:
+            ### Compare v with the largest value in low heap
+            if v > -1 * heapq.nsmallest(1, heapL)[0]:
+                heapq.heappush(heapH, v)
+            else:
+                heapq.heappush(heapL, -1 * v)
+
+            ### Balance low heap and high heap
+            if len(heapL) > len(heapH) + 1:
+                adjust = -1 * heapq.heappop(heapL)
+                heapq.heappush(heapH, adjust)
+            elif len(heapH) > len(heapL) + 2:
+                adjust = heapq.heappop(heapH)
+                heapq.heappush(heapL, -1 * adjust)
+
+            ### Based on size of both heap, select median
+            if len(heapL) >= len(heapH):
+                m = -1 * heapq.nsmallest(1, heapL)[0]
+            else:
+                m = heapq.nsmallest(1, heapH)[0]
+
+        res.append(m)
+
+#    print(res)
+    print('Result: ', sum(res) % 10000)
+
+def week4Task():
+    """
+    Task for week 4
+    """
+    ### Initialization
+    fileLocation = 'week-4/2sum.txt'
+
+    LOW = -10000
+    HIGH = 10000
+
+    res = 0
+
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [int(x) for x in dataRaw]
+    dataV2 = set(dataV1)
+
+#    print(dataV1)
+
+    ### Sort data first
+    dataSort = sorted(dataV2)
+
+    ### Loop through all elements to find possible sums
+    tAll = []
+    for i in dataSort:
+        boundLow = LOW - i
+        boundHigh = HIGH - i
+        idxLow = binarySearchLow(dataSort, boundLow)
+        idxHigh = binarySearchHigh(dataSort, boundHigh) -1 
+        jList = dataSort[idxLow : idxHigh + 1]
+        tList = [x + i for x in jList]
+        tAll.append(tList)
+
+    ### Count distinct t values
+    tFlat = [x for y in tAll for x in y]
+    tSet = set(tFlat)
+
+    ### Distinct t values
+    tNum = len(tSet)
+
+    print(tNum)
+
+def binarySearch(arr, x, l, r):
+    """
+    Implement binary search algorithm
+    """
+    ### Initialization
+
+    ### To see if x exit
+    if r >= l: 
+        ### Compare x with middle value
+        mid = l + int((r - l) / 2)
+        if arr[mid] == x:
+            return mid
+        elif arr[mid] > x:
+            return binarySearch(arr, x, l, mid-1)
+        else:
+            return binarySearch(arr, x, mid+1, r)
+    else:
+        return -1
+
+def binarySearchLow(arr, x, lo=0, hi=None):
+    """
+    Return the index of the value larger or equal than x
+    """
+    if hi == None:
+        hi = len(arr)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if arr[mid] == x:
+            return mid
+        elif x > arr[mid]:
+            lo = mid + 1
+        else:
+            hi = mid
+    return lo
+
+def binarySearchHigh(arr, x, lo=0, hi=None):
+    """
+    Return the index of the value larger or equal than x
+    """
+    if hi == None:
+        hi = len(arr)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if x < arr[mid]:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
 if __name__ == '__main__':
 #    thread = threading.Thread(target=week1Task)
 #    thread.start()
@@ -251,13 +401,16 @@ if __name__ == '__main__':
 #    testCase = [[1,7],[2,5],[3,9],[4,1],[5,8],[6,3],[6,8],[7,9],[7,4],[8,2],[9,6]]
 #    dfsLoop(testCase, list(reversed(np.arange(1, 10))))
 
-    week2Task()
+#    week2Task()
 
+#    week3Task()
 
-
-
-
-
+    week4Task()
+#    arr = [2,4,10,13]
+#    print(binarySearch(arr, 6, 0, len(arr)-1))
+#    print(binarySearchLow(arr, 4))
+#    print(bisect_left(arr, 0))
+#    print(binarySearchHigh(arr,3))
 
 
 
