@@ -169,9 +169,189 @@ def findMST(n, m, edges):
     print(sum(knownEdge))
     
 
+def week2Task1():
+    """
+    Code up first clustering problem with max-spacing.
+    """
+    ### Initialization
+    fileLocation = 'week-2/clustering1.txt'
+#    fileLocation = 'week-2/p1_test.txt'
+    
+    K = 4
+
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [x.split() for x in dataRaw[1:]]
+    dataV2 = [[int(y) for y in x] for x in dataV1]
+    N = int(dataRaw[0])
+
+    ### Initialize union-find structure
+    uf = UF(N)
+
+    ### Sort by edge weights
+    dataV3 = sorted(dataV2, key=lambda x: x[2], reverse=False)
+
+#    print(dataV3)
+
+    k = N
+    i = 0
+    nodes = list(range(N))
+    while k >= K:
+        ### Union the two nodes with least edge
+        edgeInfo = dataV3[i]
+        if uf.find(edgeInfo[0]-1) != uf.find(edgeInfo[1]-1):
+            uf.union(edgeInfo[0]-1, edgeInfo[1]-1)
+
+        ### Check the remaining clastering
+        zipped = list(zip(nodes, uf._id))
+        k = len(set([y for (x, y) in zipped if x == y]))
+#        print(k)
+#        print(uf._id)
+#        print(uf._rank)
+#        print(i)
+#        print('\n\n')
+
+        ### Increase
+        i += 1
+
+
+#    print(dataRaw)
+#    print(dataV2)
+#    print(dataV3)
+    print(dataV3[i-1])
+    
+def week2Task2():
+    """
+    Code up first clustering problem with max-spacing.
+    """
+    ### Initialization
+    fileLocation = 'week-2/clustering_big.txt'
+    
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [x.replace(" ", "") for x in dataRaw[1:]]
+    dataSet = set(dataV1)
+    dataV2 = list(set(dataV1))
+    N = len(dataV2)
+    BITS = int(dataRaw[0].split()[1])
+
+    ### Build dict for nodes
+    nodeDict = {}
+    for i in range(N):
+        nodeDict[dataV2[i]] = i
+
+    ### Initialize Union-Find
+    uf = UF(N)
+
+    ### Loop through all nodes
+    for i in range(N):
+        ### Get nodes with distance 1 or 2
+        dist1 = findNode(dataV2[i], 1)
+        dist2 = findNode(dataV2[i], 2)
+        dist12Raw = dist1 + dist2
+        dist12 = []
+        for j in dist12Raw:
+            if j in dataSet:
+                dist12.append(j)
+
+        ### Union them together
+        iIndex = nodeDict[dataV2[i]]
+        for j in dist12:
+            jIndex = nodeDict[j]
+            if uf.find(iIndex) != uf.find(jIndex):
+                uf.union(iIndex, jIndex)
+
+    nodesAll = list(range(N))
+    numCluster = len([y for (x,y) in zip(nodesAll, uf._id) if x == y])
+
+
+    ### Testing
+    print(N)
+    print(BITS)
+#    print(dataV2)
+#    print(len(dataV2))
+    print(numCluster)
+
+def findNode(node, dist=1):
+    """ Find nodes with certain Hamming distance """
+    ### Initialization
+    BITS = len(node)
+
+    res = []
+
+    ### Calculate possible nodes
+    if dist == 1:
+        for i in range(BITS):
+            temp = list(node)
+            temp[i] = '1' if temp[i] == '0' else '0'
+            resSub = "".join(temp)
+            res.append(resSub)
+    elif dist == 2:
+        for i in range(BITS):
+            for j in range(BITS):
+                temp = list(node)
+                if i != j:
+                    temp[i] = '1' if temp[i] == '0' else '0'
+                    temp[j] = '1' if temp[j] == '0' else '0'
+                    resSub = "".join(temp)
+                    res.append(resSub)
+        res = list(set(res))
+    else:
+        raise Exception('We donnot support this distance!')
+
+    return res
+
+class UF:
+    """ Class for union find data structure """
+
+    def __init__(self, N):
+        """ Initialization """
+        self._N = N
+        self._id = list(range(N))
+        self._rank = [0] * N
+
+    def find(self, x):
+        """ Find the leader of x """
+        idd = self._id
+        leader = idd[x]
+
+        while idd[leader] != leader:
+            leader = idd[leader]
+
+        ### Path compression
+        idd[x] = leader
+
+        return leader
+
+    def union(self, p, q):
+        """ Union p and q """
+        idd = self._id
+        rank = self._rank
+
+        ### Find leaders
+        i = self.find(p)
+        j = self.find(q)
+
+        ### Union by rank
+        if rank[i] == rank[j]:
+            idd[j] = idd[i]
+            rank[i] = rank[i] + 1
+        elif rank[i] > rank[j]:
+            idd[j] = idd[i]
+        else:
+            idd[i] = idd[j]
+
+        
+
+
 if __name__ == '__main__':
 #    week1Task1()
-    week1Task2()
+#    week1Task2()
+#    week2Task1()
+    week2Task2()
+#    print(findNode('11111', 2))
 
 
 
