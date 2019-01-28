@@ -343,18 +343,143 @@ class UF:
         else:
             idd[i] = idd[j]
 
-        
+def week3Task1():
+    """ Code up huffman code """
+    ### Initialization
 
+    sys.setrecursionlimit(1500)
+
+    fileLocation = 'week-3/huffman.txt'
+#    fileLocation = 'week-3/huffman_test1.txt'
+    
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [int(x) for x in dataRaw]
+    cntSymbol = dataV1[0]
+    A = dataV1[1:]
+
+#    print(dataV1)
+
+    ### Recursivly calculate haffman code
+    res = [''] * cntSymbol
+    f = {}
+    for i in range(cntSymbol):
+        if A[i] in f:
+            f[A[i]].append(i)
+        else:
+            f[A[i]] = [i]
+    heapq.heapify(A)
+    HUF(A, f, res)
+
+    resFinal = res[0:cntSymbol]
+
+    minLen = min([len(x) for x in resFinal])
+    maxLen = max([len(x) for x in resFinal])
+
+    print(res)
+    print(A)
+    print(f)
+    print(resFinal)
+    print('Min length: ', minLen)
+    print('Max length: ', maxLen)
+
+def HUF(A, f, res):
+    """ Haffman function """
+    ### Initialization
+    ### Recursion
+    if len(A) == 2:
+        res[list(f.values())[0][0]] = '0'
+        res[list(f.values())[1][0]] = '1'
+    else:
+        ### Pop two min weights
+        u = heapq.heappop(A)
+        v = heapq.heappop(A)
+
+        ### Delete two vertices in map f
+        if len(f[u]) == 1:
+            uIdx = f[u][0]
+            del f[u]
+        else:
+            uIdx = f[u].pop()
+        if len(f[v]) == 1:
+            vIdx = f[v][0]
+            del f[v]
+        else:
+            vIdx = f[v].pop()
+    
+        ### Add up to new weights
+        z = u + v
+        zIdx = len(res)
+        res.append('')
+
+#        print(u, v, uIdx, vIdx, z, zIdx)
+
+        ### Insert back new value
+        heapq.heappush(A, z)
+        if z in f:
+            f[z].append(zIdx)
+        else:
+            f[z] = [zIdx]
+
+        ### Recursive on HUF
+        HUF(A, f, res)
+
+        ### Reverse the tree
+        res[uIdx] = res[zIdx] + '0'
+        res[vIdx] = res[zIdx] + '1'      
+
+def week3Task2():
+    """ Code up huffman code """
+    ### Initialization
+    sys.setrecursionlimit(1500)
+
+    fileLocation = 'week-3/mwis.txt'
+    
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [int(x) for x in dataRaw]
+    cntV = dataV1[0]
+    dataV2 = dataV1[1:]
+
+#    print(dataV2)
+
+    ### Init for dynamic programming
+    A = [0] * (cntV+1)
+    A[0] = 0
+    A[1] = dataV2[0]
+    S = []
+
+    ### Get Maximum-weight value
+    for i in range(2, cntV+1):
+        A[i] = max(A[i-1], A[i-2] + dataV2[i-1])
+
+    ### Get the solution
+    j = cntV
+    while j >= 1:
+        if A[j-1] >= A[j-2] + dataV2[j-1]:
+            j -= 1
+        else:
+            S.append(j)
+            j -= 2
+
+    ### Check for specific vertices
+    vCheck = [1, 2, 3, 4, 17, 117, 517, 997]
+    resCheck = [1 if x in S else 0 for x in vCheck]
+
+    print(resCheck)
+    print(''.join([str(e) for e in resCheck]))
 
 if __name__ == '__main__':
 #    week1Task1()
 #    week1Task2()
 #    week2Task1()
-    week2Task2()
+#    week2Task2()
 #    print(findNode('11111', 2))
 
-
-
+#    week3Task1()
+    week3Task2()
 
 
 
