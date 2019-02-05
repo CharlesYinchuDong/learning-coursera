@@ -471,6 +471,100 @@ def week3Task2():
     print(resCheck)
     print(''.join([str(e) for e in resCheck]))
 
+def week4Task1():
+    """ Code knapsack problem"""
+    ### Initialization
+    fileLocation = 'week-4/knapsack1.txt'
+#    fileLocation = 'week-4/knapsack1_test.txt'
+    
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [[int(y) for y in x.split()] for x in dataRaw]
+    W = dataV1[0][0]
+    N = dataV1[0][1]
+    dataV2 = dataV1[1:]
+
+    ### Init for kanpsack
+    A = [[0] * (W+1) for x in range(N+1)]
+
+    for i in range(1, N+1):
+        for x in range(W+1):
+            if x < dataV2[i-1][1]:
+                A[i][x] = A[i-1][x]
+            else:
+                A[i][x] = max(A[i-1][x], A[i-1][x - dataV2[i-1][1]] + dataV2[i-1][0])
+
+    ### Check results
+    print(A[N][W])
+#    print(A)
+
+#    print(W, N, dataV2)
+#    print(len(A[0]))
+
+def week4Task2():
+    """ Code knapsack problem"""
+    ### Initialization
+    sys.setrecursionlimit(4000)
+
+    fileLocation = 'week-4/knapsack_big.txt'
+#    fileLocation = 'week-4/knapsack1_test.txt'
+#    fileLocation = 'week-4/knapsack1.txt'
+    
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    dataV1 = [[int(y) for y in x.split()] for x in dataRaw]
+    W = dataV1[0][0]
+    N = dataV1[0][1]
+    dataV2 = dataV1[1:]
+
+    ### Top-down recursion
+    known = {}
+    res = solve(N, W, dataV2, known)
+
+    print(res)
+
+#    print(W, N)
+
+def solve(i, x, data, known):
+    """ Recursively solve knapsack problem """
+    if i == 1:
+        if x < data[i-1][1]:
+            known[(i,x)] = 0
+            return 0
+        else:
+            known[(i,x)] = data[i-1][0]
+            return data[i-1][0]
+    else:
+        if (i,x) in known:
+            res = known[(i,x)]
+        elif x < data[i-1][1]:
+            res = solve(i-1, x, data, known)
+        else:
+            res = max(solve(i-1, x, data, known), solve(i-1, x-data[i-1][1], data, known) + data[i-1][0])
+        known[(i,x)] = res
+        return res
+
+def obst(N, ps):
+    """ Optimal binary search tree """
+    ### Initialization
+    A = [[0] * N for x in range(N)]
+
+    ### Loop through
+    for s in range(N):
+        for i in range(N):
+            if i+s < N:
+                temp = []
+                for r in range(i, i+s+1):
+                    if r+1 > i+s:
+                        resTemp = sum(ps[i:i+s+1]) + A[i][r-1]     
+                    else:
+                        resTemp = sum(ps[i:i+s+1]) + A[i][r-1] + A[r+1][i+s]
+                    temp.append(resTemp)
+                A[i][i+s] = min(temp)
+    return A[0][N-1]
+
 if __name__ == '__main__':
 #    week1Task1()
 #    week1Task2()
@@ -479,11 +573,13 @@ if __name__ == '__main__':
 #    print(findNode('11111', 2))
 
 #    week3Task1()
-    week3Task2()
+#    week3Task2()
 
+#    week4Task1()
+#    week4Task2()
 
-
-
+    print(obst(7, [0.05, 0.4, 0.08, 0.04, 0.1, 0.1, 0.23]))
+    print(obst(7, [0.2, 0.05, 0.17, 0.1, 0.2, 0.03, 0.25]))
 
 
 
