@@ -76,8 +76,59 @@ def floydWarshall(numV, numE, data):
      
     return minLen, existNegCyc
 
+def week2():
+    """
+    Code up Traveling Salesman Problem for week 2
+    """
+    ### Initialization
+    fileLocation = 'week-2/tsp.txt'
+
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    numCity = int(dataRaw[0])
+    dataV1 = [x.split() for x in dataRaw[1:]]
+    dataV2 = [[float(y) for y in x] for x in dataV1]
+
+#    print(dataV2)
+    
+    minDist = tsp(numCity, dataV2)
+
+    print(minDist)
+ 
+def tsp(N, data):
+    """
+    Find the minimum path for Traveling Salesman Problem
+    """
+    ### Define function to convert row number to list of nodes
+    def rowIdxToNodes(N, idx):
+        string = ('{0:0' + str(N) + 'b}').format(idx)
+        stringToList = list(string)
+        stringToList[0] = '1' 
+        nodes = [i for i,v in enumerate(stringToList) if v == '1']
+        return nodes
+    ### Define function to calculate distance
+    def getDist(a1, a2):
+        dist = np.sqrt(((a1[0] - a2[0]) ** 2) + ((a1[1] - a2[1]) ** 2))
+        return dist
+    
+    ### Init
+#    A = np.full((2 ** (N-1), N), np.inf)
+#    A[0, 0] = 0
+#    for m in range(2, N+1):
+    for m in range(3,4):
+        possibleSs = []
+        for i in range(2 ** 24):
+            nodes = rowIdxToNodes(N, i)
+            if len(nodes) == m:
+                possibleSs.append(nodes)
+        print(possibleSs)
+
+    return 1 
+
 if __name__ == '__main__':
-    week1()
+#    week1()
+    week2()
 
 
 
