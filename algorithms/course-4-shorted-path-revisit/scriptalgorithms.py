@@ -11,6 +11,7 @@ from collections import Counter
 import sys, threading
 import heapq
 import matplotlib.pyplot as plt
+import math
 
 def week1():
     """
@@ -230,11 +231,99 @@ def tspGreedy(N, data):
 
     return totalDist      
 
+def week4():
+    """
+    Code up 2SAT problem for week 4
+    """
+    ### Initialization
+    fileLocation = 'week-4/2sat6.txt'
+#    fileLocation = 'week-4/2sat-test.txt'
+
+    ### Load data
+    with open(fileLocation, 'r') as f:
+        dataRaw = f.read().splitlines()
+    N = int(dataRaw[0])
+    dataV1 = [x.split() for x in dataRaw[1:]]
+    dataV2 = [[int(y) for y in x] for x in dataV1]
+
+#    print(dataV2)
+#    print(min([abs(x) for y in dataV2 for x in y]))
+
+    dataV3 = cleanClauses(dataV2)
+    print('Lengh of post-cleaning: ', len(dataV3))
+    print(dataV3)
+
+    ans = twoSat(N = len(dataV3), data = dataV3)
+
+    print(ans)
+
+def cleanClauses(data):
+    """
+    Repeatly remove unnecessary clauses
+    """
+    ### Init
+    ### Remove until cannot go further
+    while True:
+#        vInfo = dict()
+#        for idx, clause in enumerate(data):
+#            for variable in clause:
+#                if abs(variable) not in vInfo:
+#                    vInfo[abs(variable)] = [0, 0, []]
+#                if variable > 0:
+#                    vInfo[abs(variable)][0] += 1
+#                else:
+#                    vInfo[abs(variable)][1] += 1
+#                vInfo[abs(variable)][2].append(idx)
+#        clauseToDelete = list(set([x for (u,v) in vInfo.items() for x in v[2] if ((v[0] == 0) or (v[1] == 0))]))
+        vPos = set()
+        vNeg = set()
+        for clause in data:
+            for variable in clause:
+                if variable > 0:
+                    vPos.add(variable)
+                else:
+                    vNeg.add(abs(variable))
+        variableToDelete = vPos.symmetric_difference(vNeg)
+        lenBefore = len(data)
+#        data = [x for i,x in enumerate(data) if i not in clauseToDelete]
+        data = [x for x in data if ((abs(x[0]) not in variableToDelete) and (abs(x[1]) not in variableToDelete))]
+        lenAfter = len(data)
+        if lenBefore == lenAfter:
+            break
+    return data
+
+def twoSat(N, data):
+    """
+    Code up 2SAT problem
+    """
+    ### Init
+    ### Loop 
+    for _ in range(int(math.log(N,2))):
+        vs = {abs(x): bool(random.getrandbits(1)) for y in data for x in y} 
+#        print(vs)
+#        print(data)
+#        print(clauses)
+        for _ in range(2 * (N ** 2)):
+            clauses = [[vs[x] if x>0 else (not vs[(-1)*x]) for x in y] for y in data]
+#            print(clauses)
+            if all([any(x) for x in clauses]):
+                return 'satisfiable'
+            else:
+                idx = random.randint(0, N-1)
+                while any(clauses[idx]):
+                    idx = random.randint(0, N-1)
+                twoIdx = random.randint(0, 1)
+                vIdx = abs(data[idx][twoIdx])
+                vs[vIdx] = not vs[vIdx]
+
+    return 'not satisfiable'
+
+
 if __name__ == '__main__':
 #    week1()
 #    week2()
-    week3()
-
+#    week3()
+    week4()
 
 
 
